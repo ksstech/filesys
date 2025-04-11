@@ -17,7 +17,9 @@ extern "C" {
 #define	lfsPART_LABEL1			"lfs"
 #define	lfsPART_LABEL2			"littlefs"
 
-// ############################################ global functions ###################################
+extern SemaphoreHandle_t shLFSmux;
+
+// ################################## Global/public variables ######################################
 
 /**
  * @brief
