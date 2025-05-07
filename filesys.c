@@ -9,12 +9,11 @@
 #include "filesys.h"
 #include "syslog.h"
 
+#include "esp_littlefs.h"
+#include "esp_flash.h"
+
 #include <unistd.h>
 #include <sys/stat.h>
-
-#include "esp_littlefs.h"
-
-#include "esp_flash.h"
 
 // ###################################### General macros ###########################################
 
