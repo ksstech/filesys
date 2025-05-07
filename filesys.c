@@ -109,11 +109,11 @@ int xFileSysListFileContent(report_t * psR, FILE * fp) {
 		sRV = fread(pu8Buf, sizeof(uint8_t), filesysBUFSIZE, fp);
 		if (sRV < 1)
 			break;
-		iRV += report(psR, "%p" strNL "%'-+hhY", pAddr, sRV, pu8Buf);
+		iRV += xReport(psR, "%p" strNL "%'-+hhY", pAddr, sRV, pu8Buf);
 		pAddr += sRV;
 		vTaskDelay(pdMS_TO_TICKS(5));	// allow for kicking the WDT
 	}
-	iRV += report(psR, (psR->sFM.fsNL) ? strNL : strNUL);
+	iRV += xReport(psR, (psR->sFM.fsNL) ? strNL : strNUL);
 	free(pu8Buf);
 	return (sRV < 0) ? sRV : iRV;
 }
@@ -132,10 +132,10 @@ int xFileSysListFileInfo(report_t * psR, struct dirent * psDE, const char * pccD
 	int iRV = stat(psDE->d_name, &sStat);
 	if (iRV < 0)
 		return iRV;
-	report(psR, "%s/%s  size=%d  tM=%R", pccDir, psDE->d_name, sStat.st_size, xTimeMakeTimeStamp(sStat.st_mtime, 0));
+	xReport(psR, "%s/%s  size=%d  tM=%r", pccDir, psDE->d_name, sStat.st_size, sStat.st_mtime);
 	if (psR->sFM.fsLev3)
-		report(psR, "  tA=%R  tC=%R  Uid=%hu  Gid=%hu", xTimeMakeTimeStamp(sStat.st_atime, 0), xTimeMakeTimeStamp(sStat.st_ctime, 0), sStat.st_uid, sStat.st_gid);
-	report(psR, strNL);
+		xReport(psR, "  tA=%r  tC=%r  Uid=%hu  Gid=%hu", sStat.st_atime, sStat.st_ctime, sStat.st_uid, sStat.st_gid);
+	xReport(psR, strNL);
 	if (psR->sFM.fsLev4)								// File content listing required?
 		xFileSysFileDisplay(psR, psDE->d_name);
 	return iRV;
@@ -162,7 +162,7 @@ int xFileSysListDirTree(report_t * psR, const char * pccDir) {
 			if (iRV < 0)
 				SL_ERROR(iRV);
 		} else {
-			report(psR, "Error %s/%s t=%d" strNL, pccDir, psDE->d_name, psDE->d_type);
+			xReport(psR, "Error %s/%s t=%d" strNL, pccDir, psDE->d_name, psDE->d_type);
 		}
 	}
 	return closedir(psDir);
@@ -173,7 +173,7 @@ int xFileSysListPartition(report_t * psR) {
 	int iRV = esp_littlefs_info(conf.partition_label, &total, &used);
 	if (iRV != ESP_OK)
         return iRV;
-	report(psR, "Partition size: %d, used: %d" strNL, total, used);
+	xReport(psR, "Partition size: %d, used: %d" strNL, total, used);
 	if (psR->sFM.fsLev1)
         xFileSysListDirTree(psR, "/");
 	return iRV;
@@ -247,14 +247,14 @@ static void xFileSysTestFSdir(const char * pcDir) {
 	report_t * psR = NULL;
 	int iRV = mkdir(pcDir, 0);
 	if (iRV == EEXIST)
-		report(psR, "Directory '%s' already exist" strNL, pcDir);
+		xReport(psR, "Directory '%s' already exist" strNL, pcDir);
 
 	size_t Size = strlen(pcDir) + sizeof(lfsFNAME_ORIG) + 3; 
 	char ccaBuf1[Size];
 	snprintfx(ccaBuf1, Size, "%s/%s", pcDir, lfsFNAME_ORIG);
 	FILE * f = fopen(ccaBuf1, "w");
 	if (f == NULL) {
-		report(psR, "Failed to open '%s' for writing" strNL, ccaBuf1);
+		xReport(psR, "Failed to open '%s' for writing" strNL, ccaBuf1);
 		return;
 	}
 	fprintfx(f, "LittleFS fprintfx to %s!" strNL, ccaBuf1);
@@ -267,12 +267,12 @@ static void xFileSysTestFSdir(const char * pcDir) {
 	if (stat(ccaBuf2, &st) == 0)
 		unlink(ccaBuf2);
 	if (rename(ccaBuf1, ccaBuf2) != 0) {
-		report(psR, "Rename %s to %s failed" strNL, ccaBuf1, ccaBuf2);
+		xReport(psR, "Rename %s to %s failed" strNL, ccaBuf1, ccaBuf2);
 		return;
 	}
 	f = fopen(ccaBuf2, "r");
 	if (f == NULL) {
-		report(psR, "Failed to open %s for reading" strNL, ccaBuf2);
+		xReport(psR, "Failed to open %s for reading" strNL, ccaBuf2);
 		return;
 	}
 	char line[64];
@@ -281,7 +281,7 @@ static void xFileSysTestFSdir(const char * pcDir) {
 	char *pos = strchr(line, CHR_LF);
 	if (pos)
 		*pos = 0;
-	report(psR, "Read from %s: '%s'" strNL, ccaBuf2, line);
+	xReport(psR, "Read from %s: '%s'" strNL, ccaBuf2, line);
 }
 
 static void xFileSysTestFSdelete(const char * pcDir) {
