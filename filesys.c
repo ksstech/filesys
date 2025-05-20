@@ -27,22 +27,6 @@
 
 // ###################################### Local constants ##########################################
 
-#if ((appAEP == 1) && (appPLTFRM == HW_AC01) && (appOPTION < 2))
-
-	static esp_vfs_littlefs_conf_t conf = {
-		.base_path = "", .partition_label = NULL, .partition = NULL, //.sdcard = NULL,
-		.format_if_mount_failed = true, .read_only = false, .dont_mount = false, .grow_on_mount = true,
-	};
-
-#else
-
-	const esp_vfs_littlefs_conf_t conf = {
-		.base_path = "", .partition_label = "littlefs", .partition = NULL,
-		.format_if_mount_failed = true, .read_only = false, .dont_mount = false, .grow_on_mount = true,
-	};
-
-#endif
-
 // ###################################### Local variables ##########################################
 
 // ################################## Global/public variables ######################################
@@ -54,6 +38,11 @@ SemaphoreHandle_t shLFSmux = 0;
 // ################################### Public functions ############################################
 
 #if ((appAEP == 1) && (appPLTFRM == HW_AC01) && (appOPTION < 2))
+
+static esp_vfs_littlefs_conf_t conf = {
+	.base_path = "", .partition_label = NULL, .partition = NULL, //.sdcard = NULL,
+	.format_if_mount_failed = true, .read_only = false, .dont_mount = false, .grow_on_mount = true,
+};
 
 int	xFileSysInit(void) {
 	conf.partition_label = lfsPART_LABEL0;
@@ -71,7 +60,12 @@ int	xFileSysInit(void) {
 
 #else
 
-int	xFileSysInit(void) { return esp_vfs_littlefs_register(&conf); }
+const esp_vfs_littlefs_conf_t conf = {
+	.base_path = "", .partition_label = "littlefs", .partition = NULL,
+	.format_if_mount_failed = true, .read_only = false, .dont_mount = false, .grow_on_mount = true,
+};
+
+int xFileSysInit(void) { return esp_vfs_littlefs_register(&conf); }
 
 #endif
 
