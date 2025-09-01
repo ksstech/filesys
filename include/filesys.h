@@ -37,7 +37,9 @@ int	xFileSysDeInit(void);
  * @brief	Used by Syslog to persist host messages if not connected, hence no error logging.
  * @return	ErSUCCESS or error code
 */
-int xFileSysFileWrite(const char * pFName, const char * pMode, char * pData);
+
+int xFileSysFileWrite(const char * pFName, int fMode, char * pData, ssize_t sSize);
+int xFileSysFileWriteS(const char * pFName, int fMode, char * pData);
 
 /**
  * @brief		calculate size of file specified

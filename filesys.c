@@ -71,14 +71,17 @@ int xFileSysInit(void) { return esp_vfs_littlefs_register(&conf); }
 
 int xFileSysDeInit(void) { return esp_vfs_littlefs_unregister(conf.partition_label); }
 
-int xFileSysFileWrite(const char * pFName, const char * pMode, char * pData) {
-	int iRV = 0;
-	FILE * fp = fopen(pFName, pMode);
-	if (fp != NULL) {
-		iRV = fputs(pData, fp);
-		fclose(fp);
-	}
-	return (fp == NULL || iRV < erSUCCESS) ? -errno : iRV;
+ssize_t xFileSysFileWrite(const char * pFName, int fMode, char * pData, ssize_t sSize) {
+	int fh = open(pFName, fMode);
+	if (fh < 0)
+		return erFAILURE;
+	int iRV = write(fh, pData, sSize);
+	close(fh);
+	return iRV;
+}
+
+ssize_t xFileSysFileWriteS(const char * pFName, int fMode, char * pData) {
+	return xFileSysFileWrite(pFName, fMode, pData, strlen(pData));
 }
 
 ssize_t xFileSysGetFileSize(const char * pccFname) {
