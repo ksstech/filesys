@@ -37,7 +37,7 @@ SemaphoreHandle_t shLFSmux = 0;
 
 // ################################### Public functions ############################################
 
-#if ((appAEP == 1) && (appPLTFRM == HW_AC01) && (appOPTION < 2))
+#if ((cmakeAEP == 1) && (cmakePLTFRM == HW_AC01) && (cmakePLTOPT < 2))
 
 static esp_vfs_littlefs_conf_t conf = {
 	.base_path = "", .partition_label = NULL, .partition = NULL, //.sdcard = NULL,
