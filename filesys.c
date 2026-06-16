@@ -117,9 +117,10 @@ int xFileSysListFileContent(report_t * psR, FILE * fp) {
 int xFileSysFileDisplay(report_t * psR, const char * pccFN) {
 	FILE * fp = fopen(pccFN, "r");
 	int iRV = 0;
-	if (fp != 0) 
+	if (fp != NULL) {
 		iRV = xFileSysListFileContent(psR, fp);
-	fclose(fp);
+		fclose(fp);
+	}
 	return iRV;
 }
 
@@ -324,3 +325,9 @@ void xFileSysTestFS(void) {
 	xFileSysListPartition(&sRprt);
 	ESP_ERROR_CHECK(xFileSysDeInit());
 }
+
+/*
+ * 2026-06-16
+ *   - Fix C-4: fclose(fp) called unconditionally even when fopen() returned
+ *     NULL; moved fclose() inside the if(fp != NULL) block
+ */
