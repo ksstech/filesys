@@ -37,7 +37,12 @@ SemaphoreHandle_t shLFSmux = 0;
 
 // ################################### Public functions ############################################
 
-#if ((cmakeAEP == 1) && (cmakePLTFRM == HW_AC01) && (cmakePLTOPT < 2))
+/* The 3-label fallback chain also serves PLTOPT 3 (Legacy3x1M) and 4 (the release variant): on
+ * the MIGRATION boot the esp_partition RAM list was loaded BEFORE halFlashMigratePre60085()
+ * rewrote the table (Stage 0.1 precedes 0.4), so the old label is what mounts this boot; from
+ * the next boot "littlefs" matches directly. On current-standard tables the first two probes
+ * fail fast with NOT_FOUND. PLTOPT 9 (bench) and 2 stay littlefs-only. */
+#if ((cmakeAEP == 1) && (cmakePLTFRM == HW_AC01) && (cmakePLTOPT < 2 || cmakePLTOPT == 3 || cmakePLTOPT == 4))
 
 static esp_vfs_littlefs_conf_t conf = {
 	.base_path = "", .partition_label = NULL, .partition = NULL, //.sdcard = NULL,
