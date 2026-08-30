@@ -77,6 +77,12 @@ int xFileSysInit(void) { return esp_vfs_littlefs_register(&conf); }
 
 int xFileSysDeInit(void) { return esp_vfs_littlefs_unregister(conf.partition_label); }
 
+int xFileSysInfo(size_t * pTotal, size_t * pUsed) { return esp_littlefs_info(conf.partition_label, pTotal, pUsed); }
+
+bool xFileSysMounted(void) { return esp_littlefs_mounted(conf.partition_label); }
+
+int xFileSysFormat(void) { return esp_littlefs_format(conf.partition_label); }
+
 ssize_t xFileSysFileWrite(const char * pFName, int fMode, char * pData, ssize_t sSize) {
 	int fh = open(pFName, fMode);
 	if (fh < 0)

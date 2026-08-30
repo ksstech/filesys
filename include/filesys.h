@@ -34,6 +34,23 @@ int	xFileSysInit(void);
 int	xFileSysDeInit(void);
 
 /**
+ * @brief	Raw partition numbers - the report-free half of xFileSysListPartition()
+ * @return	ESP_OK or the esp_littlefs_info() error
+ */
+int xFileSysInfo(size_t * pTotal, size_t * pUsed);
+
+/**
+ * @brief	Is the partition currently mounted?
+ */
+bool xFileSysMounted(void);
+
+/**
+ * @brief	ERASE and re-create the file system on the partition (esp_littlefs_format)
+ * @return	ESP_OK or error
+ */
+int xFileSysFormat(void);
+
+/**
  * @brief	Used by Syslog to persist host messages if not connected, hence no error logging.
  * @return	ErSUCCESS or error code
 */
