@@ -13,9 +13,6 @@ extern "C" {
 
 #define	filesysBUFSIZE			0x1000
 
-#define	lfsPART_LABEL0			"FlashFS"
-#define	lfsPART_LABEL1			"lfs"
-#define	lfsPART_LABEL2			"littlefs"
 
 extern SemaphoreHandle_t shLFSmux;
 

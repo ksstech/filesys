@@ -37,43 +37,12 @@ SemaphoreHandle_t shLFSmux = 0;
 
 // ################################### Public functions ############################################
 
-/* The 3-label fallback chain serves PLTOPT 0, the fleet release variant (was PLTOPT 4 before the
- * 2026-08-28 renumber). On a current table the first two probes fail fast with NOT_FOUND, which
- * is the two "partition could not be found" lines every release boot logs. Retained only until
- * the fleet is confirmed 100% on the "littlefs" label - then this whole block goes and the
- * littlefs-only #else below becomes unconditional. PLTOPT 8 (AMM AC00) and 9 (bench) are
- * littlefs-only already. */
-#if ((cmakeAEP == 1) && (cmakePLTFRM == HW_AC01) && (cmakePLTOPT == 0))
-
-static esp_vfs_littlefs_conf_t conf = {
-	.base_path = "", .partition_label = NULL, .partition = NULL, //.sdcard = NULL,
-	.format_if_mount_failed = true, .read_only = false, .dont_mount = false, .grow_on_mount = true,
-};
-
-int	xFileSysInit(void) {
-	conf.partition_label = lfsPART_LABEL0;
-	int iRV = esp_vfs_littlefs_register(&conf);
-	if (iRV == ESP_OK) 
-        return 1;				                        // found "FlashFS"
-	conf.partition_label = lfsPART_LABEL1;
-	iRV = esp_vfs_littlefs_register(&conf);
-	if (iRV == ESP_OK)
-        return 2;					                    // found "lfs
-	conf.partition_label = lfsPART_LABEL2;
-	iRV = esp_vfs_littlefs_register(&conf);
-	return (iRV == ESP_OK) ? 3 : iRV;					// possibly found "littlefs"
-}
-
-#else
-
 const esp_vfs_littlefs_conf_t conf = {
 	.base_path = "", .partition_label = "littlefs", .partition = NULL,
 	.format_if_mount_failed = true, .read_only = false, .dont_mount = false, .grow_on_mount = true,
 };
 
 int xFileSysInit(void) { return esp_vfs_littlefs_register(&conf); }
-
-#endif
 
 int xFileSysDeInit(void) { return esp_vfs_littlefs_unregister(conf.partition_label); }
 
