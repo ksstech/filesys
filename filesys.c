@@ -1,4 +1,4 @@
-// filesys.c - Copyright (c) 2025 Andre M. Maree / KSS Technologies (Pty) Ltd.
+// filesys.c - Copyright (c) 2025-26 Andre M. Maree / KSS Technologies (Pty) Ltd.
 
 /*
     https://github.com/espressif/esp-usb-bridge/issues/17
@@ -42,7 +42,10 @@ const esp_vfs_littlefs_conf_t conf = {
 	.format_if_mount_failed = true, .read_only = false, .dont_mount = false, .grow_on_mount = true,
 };
 
-int xFileSysInit(void) { return esp_vfs_littlefs_register(&conf); }
+/* Normalise to er???: esp_err_t failures are POSITIVE (ESP_ERR_NOT_FOUND 0x105), so returning it
+ * raw passed the caller's "iRV > erFAILURE" mount test and a mote with no 'littlefs' partition
+ * reported its filesystem as present. Only reachable now the label fallback is gone. */
+int xFileSysInit(void) { return esp_vfs_littlefs_register(&conf) == ESP_OK ? erSUCCESS : erFAILURE; }
 
 int xFileSysDeInit(void) { return esp_vfs_littlefs_unregister(conf.partition_label); }
 
